@@ -156,6 +156,10 @@ class ArticlesController extends Controller {
         {
             $this->syncTags($article, $tags);
         }
+        else
+        {
+            $article->tags()->detach();
+        }
 
         return $article;
     }
