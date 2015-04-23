@@ -131,7 +131,12 @@ class ArticlesController extends Controller {
     {
         $article = Auth::user()->articles()->create($request->all());
 
-        $this->syncTags($article, $request->input('tag_list'));
+        $tags = $request->input('tag_list');
+
+        if (count($tags))
+        {
+            $this->syncTags($article, $tags);
+        }
 
         return $article;
     }
