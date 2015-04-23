@@ -88,9 +88,7 @@ class ArticlesController extends Controller {
      */
 	public function update(Article $article, UpdateArticleRequest $request)
 	{
-        $article->update($request->all());
-
-        $this->syncTags($article, $request->input('tag_list'));
+        $this->updateArticle($article, $request);
 
         flash()->success('Article updated successfully.');
 
@@ -125,11 +123,32 @@ class ArticlesController extends Controller {
      * Create a new article.
      *
      * @param CreateArticleRequest $request
-     * @return mixed
+     * @return Article
      */
     private function createArticle(CreateArticleRequest $request)
     {
         $article = Auth::user()->articles()->create($request->all());
+
+        $tags = $request->input('tag_list');
+
+        if (count($tags))
+        {
+            $this->syncTags($article, $tags);
+        }
+
+        return $article;
+    }
+
+    /**
+     * Update an existing article.
+     *
+     * @param Article $article
+     * @param UpdateArticleRequest $request
+     * @return Article
+     */
+    private function updateArticle(Article $article, UpdateArticleRequest $request)
+    {
+        $article->update($request->all());
 
         $tags = $request->input('tag_list');
 
