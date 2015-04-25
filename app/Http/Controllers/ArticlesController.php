@@ -103,9 +103,11 @@ class ArticlesController extends Controller {
      */
 	public function destroy(Article $article)
 	{
-        //flash()->success('Article deleted successfully.');
+        $article->delete();
 
-		//return redirect('articles');
+        flash()->success('Article deleted successfully.');
+
+		return redirect('articles');
 	}
 
     /**
