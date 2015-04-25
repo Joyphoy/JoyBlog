@@ -12,7 +12,7 @@ class Article extends Model {
     protected $fillable = ['title', 'body'];
 
     /**
-     * An article belongs to a user.
+     * Get the user associated with this article.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

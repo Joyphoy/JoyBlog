@@ -2,8 +2,6 @@
 
 use App\Article;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Http\Requests\CreateArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Tag;
@@ -16,29 +14,29 @@ class ArticlesController extends Controller {
         $this->middleware('auth', ['except' => ['index', 'show']]);
     }
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
-		$articles = Article::latest('created_at')->paginate(5);
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        $articles = Article::latest('created_at')->paginate(5);
 
         return view('articles.index', compact('articles'));
-	}
+    }
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function create()
+    {
         $tags = Tag::lists('name', 'id');
 
-		return view('articles.create', compact('tags'));
-	}
+        return view('articles.create', compact('tags'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -46,14 +44,14 @@ class ArticlesController extends Controller {
      * @param CreateArticleRequest $request
      * @return Response
      */
-	public function store(CreateArticleRequest $request)
-	{
+    public function store(CreateArticleRequest $request)
+    {
         $this->createArticle($request);
 
         flash()->success('Article created successfully.');
 
         return redirect('articles');
-	}
+    }
 
     /**
      * Display the specified resource.
@@ -61,10 +59,10 @@ class ArticlesController extends Controller {
      * @param Article $article
      * @return Response
      */
-	public function show(Article $article)
-	{
+    public function show(Article $article)
+    {
         return view('articles.show', compact('article'));
-	}
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -72,12 +70,12 @@ class ArticlesController extends Controller {
      * @param Article $article
      * @return Response
      */
-	public function edit(Article $article)
-	{
+    public function edit(Article $article)
+    {
         $tags = Tag::lists('name', 'id');
 
         return view('articles.edit', compact('article', 'tags'));
-	}
+    }
 
     /**
      * Update the specified resource in storage.
@@ -86,14 +84,14 @@ class ArticlesController extends Controller {
      * @param UpdateArticleRequest $request
      * @return Response
      */
-	public function update(Article $article, UpdateArticleRequest $request)
-	{
+    public function update(Article $article, UpdateArticleRequest $request)
+    {
         $this->updateArticle($article, $request);
 
         flash()->success('Article updated successfully.');
 
         return redirect('articles');
-	}
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -101,14 +99,14 @@ class ArticlesController extends Controller {
      * @param Article $article
      * @return Response
      */
-	public function destroy(Article $article)
-	{
+    public function destroy(Article $article)
+    {
         $article->delete();
 
         flash()->success('Article deleted successfully.');
 
-		return redirect('articles');
-	}
+        return redirect('articles');
+    }
 
     /**
      * Sync tags for an article in the database.
@@ -116,9 +114,16 @@ class ArticlesController extends Controller {
      * @param Article $article
      * @param array $tags
      */
-    private function syncTags(Article $article, array $tags)
+    private function syncTags(Article $article, array $tags = null)
     {
-        $article->tags()->sync($tags);
+        if (count($tags))
+        {
+            $article->tags()->sync($tags);
+        }
+        else
+        {
+            $article->tags()->detach();
+        }
     }
 
     /**
@@ -131,12 +136,7 @@ class ArticlesController extends Controller {
     {
         $article = Auth::user()->articles()->create($request->all());
 
-        $tags = $request->input('tag_list');
-
-        if (count($tags))
-        {
-            $this->syncTags($article, $tags);
-        }
+        $this->syncTags($article, $request->input('tag_list'));
 
         return $article;
     }
@@ -152,16 +152,7 @@ class ArticlesController extends Controller {
     {
         $article->update($request->all());
 
-        $tags = $request->input('tag_list');
-
-        if (count($tags))
-        {
-            $this->syncTags($article, $tags);
-        }
-        else
-        {
-            $article->tags()->detach();
-        }
+        $this->syncTags($article, $request->input('tag_list'));
 
         return $article;
     }
