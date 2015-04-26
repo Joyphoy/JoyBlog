@@ -12,6 +12,8 @@ class ArticlesController extends Controller {
     public function __construct()
     {
         $this->middleware('auth', ['except' => ['index', 'show']]);
+
+        $this->middleware('authorize', ['only' => ['edit', 'destroy']]);
     }
 
     /**
@@ -21,7 +23,7 @@ class ArticlesController extends Controller {
      */
     public function index()
     {
-        $articles = Article::latest('created_at')->paginate(5);
+        $articles = Article::latest()->paginate(5);
 
         return view('articles.index', compact('articles'));
     }

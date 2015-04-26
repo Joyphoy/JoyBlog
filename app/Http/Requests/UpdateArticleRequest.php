@@ -12,11 +12,7 @@ class UpdateArticleRequest extends Request {
      */
     public function authorize()
     {
-        $articleId = $this->route('articles')->id;
-
-        $userId = Article::findOrFail($articleId)->user->id;
-
-        return Auth::id() == $userId;
+        return Auth::id() === $this->route('articles')->user->id;
     }
 
     /**

@@ -13,7 +13,7 @@ class UsersController extends Controller {
      */
     public function index(User $user)
     {
-        $articles = $user->articles()->latest('created_at')->paginate(5);
+        $articles = $user->articles()->latest()->paginate(5);
 
         return view('articles.index', compact('articles'));
     }

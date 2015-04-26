@@ -25,7 +25,7 @@ class TagsController extends Controller {
      */
     public function show(Tag $tag)
     {
-        $articles = $tag->articles()->latest('created_at')->paginate(5);
+        $articles = $tag->articles()->latest()->paginate(5);
 
         return view('articles.index', compact('articles'));
     }
